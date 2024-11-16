@@ -18,9 +18,6 @@ export class OrderEntity extends Entity {
       | 'id'
       | 'productId'
       | 'userId'
-      | 'orderProductId'
-      | 'orderPaymentId'
-      | 'orderDeliveryId'
       | 'orderNumber'
       | 'status'
       | 'quantity'
@@ -34,7 +31,7 @@ export class OrderEntity extends Entity {
     >,
   ): OrderEntity => Object.assign(new OrderEntity(), props);
 
-  static createFake(): OrderEntity {
+  static createFake(userId?: string): OrderEntity {
     const amount = faker.commerce.price({
       min: 900,
       max: 10000000,
@@ -73,10 +70,7 @@ export class OrderEntity extends Entity {
     const entity = OrderEntity.from({
       id: ulid(),
       productId: ulid(),
-      userId: ulid(),
-      orderProductId: ulid(),
-      orderPaymentId: ulid(),
-      orderDeliveryId: ulid(),
+      userId: userId || ulid(),
       orderNumber: generateOrderNumber(),
       status,
       quantity,

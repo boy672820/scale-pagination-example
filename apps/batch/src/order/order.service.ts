@@ -6,6 +6,7 @@ import {
   OrderPaymentEntity,
   OrderProductEntity,
 } from './entities';
+import { ulid } from 'ulid';
 
 @Injectable()
 export class OrderService {
@@ -15,38 +16,22 @@ export class OrderService {
   ) {}
 
   async bulkCreate(batchSize = 10_000): Promise<void> {
-    const { orders, products, deliveries, payments } = Array(batchSize)
+    const userId = ulid();
+
+    const orders = Array(batchSize)
       .fill(null)
-      .reduce<{
-        orders: OrderEntity[];
-        products: OrderProductEntity[];
-        deliveries: OrderDeliveryEntity[];
-        payments: OrderPaymentEntity[];
-      }>(
-        (acc) => {
-          const order = OrderEntity.createFake();
-          const product = OrderProductEntity.createFake();
-          const delivery = OrderDeliveryEntity.createFake();
-          const payment = OrderPaymentEntity.createFake();
+      .map<OrderEntity>(() => {
+        const order = OrderEntity.createFake(userId);
+        const product = OrderProductEntity.createFake();
+        const delivery = OrderDeliveryEntity.createFake();
+        const payment = OrderPaymentEntity.createFake();
 
-          order.orderProductId = product.id;
-          order.orderDeliveryId = delivery.id;
-          order.orderPaymentId = payment.id;
+        order.orderProduct = product;
+        order.orderDelivery = delivery;
+        order.orderPayment = payment;
+        return order;
+      });
 
-          acc.orders.push(order);
-          acc.products.push(product);
-          acc.deliveries.push(delivery);
-          acc.payments.push(payment);
-          return acc;
-        },
-        { orders: [], products: [], deliveries: [], payments: [] },
-      );
-
-    await this.orderRepository.bulkCreate({
-      orders,
-      products,
-      deliveries,
-      payments,
-    });
+    await this.orderRepository.bulkCreate(orders);
   }
 }

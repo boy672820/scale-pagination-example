@@ -1,9 +1,10 @@
-import { Page } from '@libs/domain/pagination/models';
-import { Order } from '../models';
+import { Order, OrderProductSummary } from '../models';
 
 export abstract class OrderRepository {
-  abstract findByPagination(
-    cursor: string,
-    limit: number,
-  ): Promise<Page<Order>>;
+  abstract findByCursor(cursor: string, limit: number): Promise<Order[]>;
+  abstract findMyOrdersByCursor(
+    userId: string,
+    cursorBasedPagination: { cursor?: string; limit: number },
+  ): Promise<OrderProductSummary[]>;
+  abstract count(): Promise<number>;
 }

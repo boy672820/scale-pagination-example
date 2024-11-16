@@ -1,15 +1,5 @@
-import {
-  OrderDeliveryEntity,
-  OrderEntity,
-  OrderPaymentEntity,
-  OrderProductEntity,
-} from './entities';
+import { OrderEntity } from './entities';
 
 export interface OrderRepository {
-  bulkCreate(entities: {
-    orders: OrderEntity[];
-    products: OrderProductEntity[];
-    deliveries: OrderDeliveryEntity[];
-    payments: OrderPaymentEntity[];
-  }): Promise<void>;
+  bulkCreate(orders: OrderEntity[]): Promise<void>;
 }

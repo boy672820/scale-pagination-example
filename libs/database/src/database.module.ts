@@ -4,9 +4,13 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AnyEntity, EntityName, MySqlDriver } from '@mikro-orm/mysql';
 import databaseConfig from './database.config';
 
+export interface DatabaseModuleOptions {
+  debug?: boolean;
+}
+
 @Module({})
 export class DatabaseModule {
-  static forRoot(): DynamicModule {
+  static forRoot(options?: DatabaseModuleOptions): DynamicModule {
     return {
       module: DatabaseModule,
       imports: [
@@ -21,6 +25,7 @@ export class DatabaseModule {
             user: configService.get<string>('database.username'),
             password: configService.get<string>('database.password'),
             dbName: configService.get<string>('database.dbName'),
+            debug: options?.debug,
           }),
           imports: [ConfigModule.forFeature(databaseConfig)],
         }),

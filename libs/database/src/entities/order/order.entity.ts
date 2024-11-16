@@ -1,5 +1,23 @@
-import { Entity, Enum, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Entity,
+  Enum,
+  Index,
+  OneToOne,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { OrderProductEntity } from './order-product.entity';
+import { OrderPaymentEntity } from './order-payment.entity';
+import { OrderDeliveryEntity } from './order-delivery.entity';
 
+@Index({
+  name: 'idx_orders_user_id_order_status',
+  properties: ['userId', 'status'],
+})
+@Index({
+  name: 'idx_orders_order_status',
+  properties: ['status'],
+})
 @Entity({ tableName: 'orders' })
 export class OrderEntity {
   @PrimaryKey({ name: 'order_id', type: 'char', length: 26 })
@@ -10,15 +28,6 @@ export class OrderEntity {
 
   @Property({ name: 'user_id', type: 'char', length: 26 })
   userId: string;
-
-  @Property({ name: 'order_product_id', type: 'char', length: 26 })
-  orderProductId: string;
-
-  @Property({ name: 'order_payment_id', type: 'char', length: 26 })
-  orderPaymentId: string;
-
-  @Property({ name: 'order_delivery_id', type: 'char', length: 26 })
-  orderDeliveryId: string;
 
   @Property({ name: 'order_number', type: 'char', length: 12, unique: true })
   orderNumber: string;
@@ -81,4 +90,13 @@ export class OrderEntity {
 
   @Property({ name: 'rejected_date', type: 'datetime', nullable: true })
   rejectedDate?: Date;
+
+  @OneToOne({ joinColumn: 'order_product_id' })
+  orderProduct: OrderProductEntity;
+
+  @OneToOne({ joinColumn: 'order_payment_id' })
+  orderPayment: OrderPaymentEntity;
+
+  @OneToOne({ joinColumn: 'order_delivery_id' })
+  orderDelivery: OrderDeliveryEntity;
 }

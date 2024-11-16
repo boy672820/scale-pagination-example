@@ -1,19 +1,6 @@
+import { transformOrderStatus } from '@libs/domain/order/utils';
 import { OrderEntity } from '@libs/database/entities/order';
-import { OrderStatus } from '@libs/domain/order/types';
 import { Order } from '../../../domain/order/models';
-
-const transformStatus = (
-  status: 'PENDING' | 'APPROVED' | 'REJECTED',
-): OrderStatus => {
-  switch (status) {
-    case 'PENDING':
-      return OrderStatus.Pending;
-    case 'APPROVED':
-      return OrderStatus.Approved;
-    case 'REJECTED':
-      return OrderStatus.Rejected;
-  }
-};
 
 export class OrderMapper {
   static toModel = (entities: OrderEntity | OrderEntity[]) =>
@@ -22,11 +9,11 @@ export class OrderMapper {
         id: entity.id,
         productId: entity.productId,
         userId: entity.userId,
-        orderProductId: entity.orderProductId,
-        orderPaymentId: entity.orderPaymentId,
-        orderDeliveryId: entity.orderDeliveryId,
+        orderProductId: entity.orderProduct.id,
+        orderPaymentId: entity.orderPayment.id,
+        orderDeliveryId: entity.orderDelivery.id,
         orderNumber: entity.orderNumber,
-        status: transformStatus(entity.status),
+        status: transformOrderStatus(entity.status),
         quantity: entity.quantity,
         totalAmount: entity.totalAmount,
         originAmount: entity.originAmount,

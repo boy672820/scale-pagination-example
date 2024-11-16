@@ -23,7 +23,9 @@
       "@libs/domain": ["libs/domain/src"],
       "@libs/domain/*": ["libs/domain/src/*"],
       "@libs/logger": ["libs/logger/src"],
-      "@libs/logger/*": ["libs/logger/src/*"]
+      "@libs/logger/*": ["libs/logger/src/*"],
+      "@libs/auth": ["libs/auth/src"],
+      "@libs/auth/*": ["libs/auth/src/*"]
     }
   }
 }

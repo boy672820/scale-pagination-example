@@ -29,17 +29,23 @@ describe('PageOrdersUseCase (Integration)', () => {
 
     pageOrdersUseCase = moduleRef.get(PageOrdersUseCase);
 
-    orderRepository.findByPagination.mockResolvedValue([order]);
+    orderRepository.findByCursor.mockResolvedValue([order]);
   });
 
-  describe('주문내역 페이지 조회', () => {
-    it('주문내역은 페이지별로 조회를 실시합니다.', async () => {
+  describe('주문내역 조회', () => {
+    it('주문내역은 페이지별로 조회합니다.', async () => {
       const cursor = '1';
       const limit = 10;
 
       const result = await pageOrdersUseCase.execute({ cursor, limit });
 
-      expect(result).toEqual([order]);
+      expect(result).toEqual({
+        items: [order],
+        hasNextPage: false,
+        hasPrevPage: false,
+        size: 1,
+        totalCount: 1,
+      });
     });
   });
 });

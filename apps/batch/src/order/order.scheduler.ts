@@ -13,7 +13,7 @@ export class OrderScheduler {
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   async handleBulkCreation() {
-    const batchSize = 1_000;
+    const batchSize = 5_000;
     const start = Date.now();
     await this.orderService.bulkCreate(batchSize);
     const end = Date.now();

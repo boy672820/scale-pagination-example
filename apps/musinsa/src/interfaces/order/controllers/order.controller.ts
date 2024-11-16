@@ -9,7 +9,7 @@ export class OrderController {
   constructor(private readonly pageOrdersUseCase: PageOrdersUseCase) {}
 
   @Get()
-  async findOrders(@Query() { cursor, limit }: PaginationQuery) {
+  async findAll(@Query() { cursor, limit }: PaginationQuery) {
     const { items, ...page } = await this.pageOrdersUseCase.execute({
       cursor,
       limit,

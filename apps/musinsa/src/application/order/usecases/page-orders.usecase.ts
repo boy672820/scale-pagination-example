@@ -1,4 +1,4 @@
-import { Page } from '@libs/domain/pagination/models';
+import { PageInfo } from '@libs/domain/pagination/models';
 import { Injectable } from '@nestjs/common';
 import { OrderService } from '../../../domain/order/services';
 import { Order } from '../../../domain/order/models';
@@ -13,7 +13,7 @@ export class PageOrdersUseCase {
   }: {
     cursor: string;
     limit: number;
-  }): Promise<Page<Order>> {
+  }): Promise<PageInfo<Order>> {
     const page = await this.orderService.findByPagination(cursor, limit);
     return page;
   }
