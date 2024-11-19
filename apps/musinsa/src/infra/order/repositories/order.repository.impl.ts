@@ -6,6 +6,7 @@ import { Order, OrderProductSummary } from '../../../domain/order/models';
 import { OrderProductSummaryMapper } from '../mappers/order-product-summary.mapper';
 import { OrderStatus } from '../../../../../../libs/domain/src/order/types';
 import { OrderMapper } from '../mappers';
+import { OrderBy, Sort } from '../../../domain/order/types';
 
 @Injectable()
 export class OrderRepositoryImpl implements OrderRepository {
@@ -29,13 +30,18 @@ export class OrderRepositoryImpl implements OrderRepository {
   async findByOffset({
     offset,
     limit,
+    sort,
+    orderBy,
   }: {
     offset: number;
     limit: number;
+    sort: Sort;
+    orderBy: OrderBy;
   }): Promise<Order[]> {
     const temp = this.em
       .createQueryBuilder(OrderEntity)
       .select('id')
+      .orderBy({ [sort === Sort.CreatedDate ? 'id' : sort]: orderBy })
       .limit(limit)
       .offset(offset);
 

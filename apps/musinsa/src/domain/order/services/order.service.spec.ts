@@ -6,6 +6,7 @@ import { mock, MockProxy } from 'jest-mock-extended';
 import { OrderRepository } from '../repositories';
 import { OrderService } from './order.service';
 import { Order, OrderProductSummary } from '../models';
+import { OrderBy, Sort } from '../types';
 
 const order = Order.from({} as any);
 const orderProductSummary = OrderProductSummary.from({} as any);
@@ -34,27 +35,69 @@ describe('OrderService', () => {
       const pageNumber = 3;
       const limit = 10;
 
-      const result = await orderService.findByPageNumber({ pageNumber, limit });
+      const result = await orderService.findByPageNumber({
+        pageNumber,
+        limit,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
+      });
 
       expect(result).toBeInstanceOf(OffsetBasedPagination);
       expect(result.items).toEqual([order]);
       expect(orderRepository.findByOffset).toHaveBeenCalledWith({
         offset: 20,
         limit: 10,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
       });
     });
+
+    it.each`
+      sort                 | orderBy         | expected
+      ${Sort.ApprovedDate} | ${OrderBy.Asc}  | ${{ sort: Sort.ApprovedDate, orderBy: OrderBy.Asc }}
+      ${Sort.ApprovedDate} | ${OrderBy.Desc} | ${{ sort: Sort.ApprovedDate, orderBy: OrderBy.Desc }}
+      ${Sort.CreatedDate}  | ${OrderBy.Asc}  | ${{ sort: Sort.CreatedDate, orderBy: OrderBy.Asc }}
+      ${Sort.CreatedDate}  | ${OrderBy.Desc} | ${{ sort: Sort.CreatedDate, orderBy: OrderBy.Desc }}
+      ${Sort.RejectedDate} | ${OrderBy.Asc}  | ${{ sort: Sort.RejectedDate, orderBy: OrderBy.Asc }}
+      ${Sort.RejectedDate} | ${OrderBy.Desc} | ${{ sort: Sort.RejectedDate, orderBy: OrderBy.Desc }}
+      ${Sort.TotalAmount}  | ${OrderBy.Asc}  | ${{ sort: Sort.TotalAmount, orderBy: OrderBy.Asc }}
+      ${Sort.TotalAmount}  | ${OrderBy.Desc} | ${{ sort: Sort.TotalAmount, orderBy: OrderBy.Desc }}
+    `(
+      '주문내역의 $sort 필드를 $orderBy로 정렬합니다.',
+      async ({ sort, orderBy, expected }) => {
+        await orderService.findByPageNumber({
+          pageNumber: 1,
+          limit: 10,
+          sort,
+          orderBy,
+        });
+
+        expect(orderRepository.findByOffset).toHaveBeenCalledWith({
+          offset: 0,
+          limit: 10,
+          ...expected,
+        });
+      },
+    );
 
     it('최대 갯수를 초과하면 마지막 페이지로 이동합니다.', async () => {
       const pageNumber = 11;
       const limit = 1000;
 
-      const result = await orderService.findByPageNumber({ pageNumber, limit });
+      const result = await orderService.findByPageNumber({
+        pageNumber,
+        limit,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
+      });
 
       expect(result.totalCount).toBe(10000);
       expect(result.currentPageNumber).toBe(10);
       expect(orderRepository.findByOffset).toHaveBeenCalledWith({
         offset: 9000,
         limit,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
       });
     });
   });
@@ -64,7 +107,12 @@ describe('OrderService', () => {
       const cursor = '1';
       const limit = 10;
 
-      const result = await orderService.findByCursor({ cursor, limit });
+      const result = await orderService.findByCursor({
+        cursor,
+        limit,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
+      });
 
       expect(result).toBeInstanceOf(CursorBasedPagination);
       expect(result.items).toEqual([order]);

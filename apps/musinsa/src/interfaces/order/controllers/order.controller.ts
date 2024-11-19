@@ -19,6 +19,7 @@ import {
   CursorBasedPaginationQuery,
   OffsetBasedPaginationQuery,
   PaginationQuery,
+  SortQuery,
 } from '../dto/queries';
 import { OrderResponse } from '../dto/responses';
 import { PaginationQueryPipe } from '../dto/pipes';
@@ -40,6 +41,7 @@ export class OrderController {
     type: IntersectionType(
       OffsetBasedPaginationQuery,
       CursorBasedPaginationQuery,
+      SortQuery,
     ),
   })
   @ApiResponse({
@@ -49,16 +51,24 @@ export class OrderController {
   @Get()
   async findAll(
     @Query(PaginationQueryPipe)
-    query: PaginationQuery,
+    paginationQuery: PaginationQuery,
+    @Query()
+    sortQuery: SortQuery,
   ) {
-    if ('cursor' in query) {
-      const pageInfo = await this.paginateOrdersByCursorUseCase.execute(query);
+    if ('cursor' in paginationQuery) {
+      const pageInfo = await this.paginateOrdersByCursorUseCase.execute({
+        ...paginationQuery,
+        ...sortQuery,
+      });
       return ResponseEntity.okWith(
         CursorPaginationResponse.from(pageInfo).reduceItems(OrderResponse.from),
       );
     }
 
-    const pageInfo = await this.paginateOrdersByPageUseCase.execute(query);
+    const pageInfo = await this.paginateOrdersByPageUseCase.execute({
+      ...paginationQuery,
+      ...sortQuery,
+    });
     return ResponseEntity.okWith(
       OffsetPaginationResponse.from(pageInfo).reduceItems(OrderResponse.from),
     );

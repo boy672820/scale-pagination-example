@@ -18,6 +18,18 @@ import { OrderDeliveryEntity } from './order-delivery.entity';
   name: 'idx_orders_order_status',
   properties: ['status'],
 })
+@Index({
+  name: 'idx_orders_approved_date',
+  properties: ['approvedDate'],
+})
+@Index({
+  name: 'idx_orders_rejected_date',
+  properties: ['rejectedDate'],
+})
+@Index({
+  name: 'idx_orders_total_amount',
+  properties: ['totalAmount'],
+})
 @Entity({ tableName: 'orders' })
 export class OrderEntity {
   @PrimaryKey({ name: 'order_id', type: 'char', length: 26 })

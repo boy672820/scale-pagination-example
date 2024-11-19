@@ -5,17 +5,22 @@ import {
 import { Injectable } from '@nestjs/common';
 import { OrderRepository } from '../repositories';
 import { Order, OrderProductSummary } from '../models';
+import { OrderBy, Sort } from '../types';
 
 @Injectable()
 export class OrderService {
   constructor(private readonly orderRepository: OrderRepository) {}
 
   async findByPageNumber({
-    pageNumber,
     limit,
+    pageNumber,
+    sort,
+    orderBy,
   }: {
-    pageNumber: number;
     limit: number;
+    pageNumber: number;
+    sort: Sort;
+    orderBy: OrderBy;
   }): Promise<OffsetBasedPagination<Order>> {
     const totalCountUpToLimit = await this.orderRepository.countWithLimit(
       OffsetBasedPagination.MAX_TOTAL_COUNT,
@@ -31,6 +36,8 @@ export class OrderService {
     const orders = await this.orderRepository.findByOffset({
       offset: (pageNumber - 1) * limit,
       limit,
+      sort,
+      orderBy,
     });
 
     return OffsetBasedPagination.from({
@@ -44,8 +51,10 @@ export class OrderService {
     cursor,
     limit,
   }: {
-    cursor?: string;
     limit: number;
+    cursor?: string;
+    sort: Sort;
+    orderBy: OrderBy;
   }): Promise<CursorBasedPagination<Order>> {
     const orders = await this.orderRepository.findByCursor({ cursor, limit });
 

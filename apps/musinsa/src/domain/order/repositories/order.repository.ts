@@ -1,4 +1,5 @@
 import { Order, OrderProductSummary } from '../models';
+import { OrderBy, Sort } from '../types';
 
 export abstract class OrderRepository {
   abstract findByCursor(cursorBasedPagination: {
@@ -8,6 +9,8 @@ export abstract class OrderRepository {
   abstract findByOffset(offsetBasedPagination: {
     offset: number;
     limit: number;
+    sort: Sort;
+    orderBy: OrderBy;
   }): Promise<Order[]>;
   abstract findMyOrdersByCursor(
     userId: string,
