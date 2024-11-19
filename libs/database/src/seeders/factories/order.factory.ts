@@ -2,7 +2,12 @@ import { Factory } from '@mikro-orm/seeder';
 import { faker } from '@faker-js/faker';
 import { ulid } from 'ulid';
 import { calculateAmount, generateOrderNumber } from '../../utils';
-import { OrderEntity } from '../../entities/order';
+import {
+  OrderDeliveryEntity,
+  OrderEntity,
+  OrderPaymentEntity,
+  OrderProductEntity,
+} from '../../entities/order';
 
 export class OrderFactory extends Factory<OrderEntity> {
   model = OrderEntity;
@@ -37,9 +42,6 @@ export class OrderFactory extends Factory<OrderEntity> {
       id: ulid(),
       productId: ulid(),
       userId: ulid(),
-      orderProductId: '',
-      orderPaymentId: '',
-      orderDeliveryId: '',
       orderNumber: generateOrderNumber(),
       status,
       quantity,
@@ -50,6 +52,9 @@ export class OrderFactory extends Factory<OrderEntity> {
       createdDate,
       approvedDate,
       rejectedDate,
+      orderDelivery: new OrderDeliveryEntity(),
+      orderPayment: new OrderPaymentEntity(),
+      orderProduct: new OrderProductEntity(),
     };
   }
 }

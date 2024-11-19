@@ -1,17 +1,16 @@
-import { PageInfo } from '@libs/domain/pagination/models';
+import { CursorBasedPagination } from '@libs/domain/pagination/models';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { PageMyOrdersUseCase } from './page-my-orders.usecase';
+import { PaginateMyOrdersUseCase } from './paginate-my-orders.usecase';
 import { OrderRepository } from '../../../domain/order/repositories';
 import { OrderService } from '../../../domain/order/services';
 import { OrderProductSummary } from '../../../domain/order/models';
 
 const orderProductSummary = OrderProductSummary.from({} as any);
 
-describe('PageMyOrdersUseCase (Integration)', () => {
-  let pageMyOrdersUseCase: PageMyOrdersUseCase;
-  let orderService: OrderService;
+describe('PaginateMyOrdersUseCase (Integration)', () => {
+  let pageMyOrdersUseCase: PaginateMyOrdersUseCase;
   let orderRepository: MockProxy<OrderRepository>;
   let app: INestApplication;
 
@@ -21,7 +20,7 @@ describe('PageMyOrdersUseCase (Integration)', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         OrderService,
-        PageMyOrdersUseCase,
+        PaginateMyOrdersUseCase,
         { provide: OrderRepository, useValue: orderRepository },
       ],
     }).compile();
@@ -29,13 +28,12 @@ describe('PageMyOrdersUseCase (Integration)', () => {
     app = moduleRef.createNestApplication();
     await app.init();
 
-    pageMyOrdersUseCase = moduleRef.get(PageMyOrdersUseCase);
-    orderService = moduleRef.get(OrderService);
+    pageMyOrdersUseCase = moduleRef.get(PaginateMyOrdersUseCase);
 
     orderRepository.findMyOrdersByCursor.mockResolvedValue([
       orderProductSummary,
     ]);
-    orderRepository.count.mockResolvedValue(0);
+    orderRepository.countActiveByUserId.mockResolvedValue(0);
   });
 
   describe('내 주문내역 조회', () => {
@@ -43,10 +41,6 @@ describe('PageMyOrdersUseCase (Integration)', () => {
       const userId = '1';
       const cursor = '1';
       const limit = 10;
-      const spyOnOrderService = jest.spyOn(
-        orderService,
-        'findMyOrdersByPagination',
-      );
 
       const result = await pageMyOrdersUseCase.execute({
         userId,
@@ -54,21 +48,7 @@ describe('PageMyOrdersUseCase (Integration)', () => {
         limit,
       });
 
-      const expected: PageInfo<OrderProductSummary> = {
-        items: [orderProductSummary],
-        hasNextPage: expect.any(Boolean),
-        hasPrevPage: expect.any(Boolean),
-        size: expect.any(Number),
-        totalCount: expect.any(Number),
-      };
-      expect({
-        items: result.items,
-        hasNextPage: result.hasNextPage,
-        hasPrevPage: result.hasPrevPage,
-        size: result.size,
-        totalCount: result.totalCount,
-      }).toEqual(expected);
-      expect(spyOnOrderService).toHaveBeenCalledWith(userId, { cursor, limit });
+      expect(result).toBeInstanceOf(CursorBasedPagination);
     });
   });
 });

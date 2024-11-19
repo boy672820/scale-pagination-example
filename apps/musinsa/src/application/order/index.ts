@@ -1,4 +1,12 @@
 import { Type } from '@nestjs/common';
-import { PageMyOrdersUseCase, PageOrdersUseCase } from './usecases';
+import {
+  PaginateMyOrdersUseCase,
+  PaginateOrdersByCursorUseCase,
+  PaginateOrdersByPageUseCase,
+} from './usecases';
 
-export const usecases: Type<any>[] = [PageOrdersUseCase, PageMyOrdersUseCase];
+export const usecases: Type<any>[] = [
+  PaginateOrdersByCursorUseCase,
+  PaginateOrdersByPageUseCase,
+  PaginateMyOrdersUseCase,
+];

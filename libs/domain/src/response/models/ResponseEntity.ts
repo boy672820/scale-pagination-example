@@ -20,12 +20,10 @@ export class ResponseEntity<T> {
   get data() {
     return this._data;
   }
-
   @Expose()
   get message() {
     return this._message;
   }
-
   @Expose()
   get status() {
     return this._status;

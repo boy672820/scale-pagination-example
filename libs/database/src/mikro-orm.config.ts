@@ -1,5 +1,6 @@
 import { MySqlDriver, Options } from '@mikro-orm/mysql';
 import { SeedManager } from '@mikro-orm/seeder';
+import { Migrator } from '@mikro-orm/migrations';
 import {
   OrderDeliveryEntity,
   OrderEntity,
@@ -34,12 +35,14 @@ const config: Options = {
     PaymentMethodEntity,
   ],
   debug: true,
-  extensions: [SeedManager],
+  extensions: [SeedManager, Migrator],
   seeder: {
-    pathTs: 'libs/database/src/seeders', // path to the folder with TS seeders (if used, we should put path to compiled files in `path`)
-    defaultSeeder: 'DatabaseSeeder', // default seeder class name
-    glob: '!(*.d).{js,ts}', // how to match seeder files (all .js and .ts files, but not .d.ts)
-    emit: 'ts', // seeder generation mode
+    pathTs: 'libs/database/src/seeders',
+    defaultSeeder: 'DatabaseSeeder',
+  },
+  migrations: {
+    tableName: 'mikro_orm_migrations',
+    pathTs: 'libs/database/src/migrations',
   },
 };
 

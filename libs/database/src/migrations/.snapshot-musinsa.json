@@ -1,0 +1,808 @@
+{
+  "namespaces": [],
+  "tables": [
+    {
+      "columns": {
+        "order_delivery_id": {
+          "name": "order_delivery_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "delivery_number": {
+          "name": "delivery_number",
+          "type": "char(12)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 12,
+          "mappedType": "character"
+        },
+        "delivery_status": {
+          "name": "delivery_status",
+          "type": "enum('STARTED','SHIPPING','COMPLETED')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'STARTED'",
+          "enumItems": [
+            "STARTED",
+            "SHIPPING",
+            "COMPLETED"
+          ],
+          "mappedType": "enum"
+        },
+        "delivery_histories": {
+          "name": "delivery_histories",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "json"
+        },
+        "delivery_store_name": {
+          "name": "delivery_store_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "delicery_store_code": {
+          "name": "delicery_store_code",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "receiver_realname": {
+          "name": "receiver_realname",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "receiver_phone": {
+          "name": "receiver_phone",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "address_detail": {
+          "name": "address_detail",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "text"
+        },
+        "zip_code": {
+          "name": "zip_code",
+          "type": "varchar(10)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 10,
+          "mappedType": "string"
+        },
+        "request_message": {
+          "name": "request_message",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "text"
+        }
+      },
+      "name": "order_deliveries",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "order_delivery_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "order_payment_id": {
+          "name": "order_payment_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "payment_status": {
+          "name": "payment_status",
+          "type": "enum('PENDING','COMPLETED','FAILED')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'PENDING'",
+          "enumItems": [
+            "PENDING",
+            "COMPLETED",
+            "FAILED"
+          ],
+          "mappedType": "enum"
+        },
+        "payment_method_id": {
+          "name": "payment_method_id",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "payment_origin_amount": {
+          "name": "payment_origin_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "payment_total_amount": {
+          "name": "payment_total_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "payment_discount_amount": {
+          "name": "payment_discount_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "payment_discount_rate": {
+          "name": "payment_discount_rate",
+          "type": "numeric(5,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 5,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "payment_saving_points": {
+          "name": "payment_saving_points",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "is_saving_points_used": {
+          "name": "is_saving_points_used",
+          "type": "tinyint(1)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 1,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "paid_date": {
+          "name": "paid_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "order_payments",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "order_payment_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "order_product_id": {
+          "name": "order_product_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "store_name": {
+          "name": "store_name",
+          "type": "varchar(45)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 45,
+          "mappedType": "string"
+        },
+        "store_code": {
+          "name": "store_code",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "product_number": {
+          "name": "product_number",
+          "type": "char(7)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 7,
+          "mappedType": "character"
+        },
+        "product_name": {
+          "name": "product_name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "product_summary": {
+          "name": "product_summary",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "text"
+        },
+        "product_thumbnail": {
+          "name": "product_thumbnail",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "text"
+        },
+        "product_origin_price": {
+          "name": "product_origin_price",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "product_total_price": {
+          "name": "product_total_price",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "product_discount_rate": {
+          "name": "product_discount_rate",
+          "type": "numeric(5,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 5,
+          "scale": 2,
+          "default": "'0.00'",
+          "mappedType": "decimal"
+        },
+        "product_discount_amount": {
+          "name": "product_discount_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "default": "'0.00'",
+          "mappedType": "decimal"
+        },
+        "product_sizes": {
+          "name": "product_sizes",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "json"
+        },
+        "product_options": {
+          "name": "product_options",
+          "type": "json",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "json"
+        }
+      },
+      "name": "order_products",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "order_product_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "order_id": {
+          "name": "order_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "order_number": {
+          "name": "order_number",
+          "type": "char(12)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 12,
+          "mappedType": "character"
+        },
+        "order_status": {
+          "name": "order_status",
+          "type": "enum('PENDING','APPROVED','REJECTED')",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "'PENDING'",
+          "enumItems": [
+            "PENDING",
+            "APPROVED",
+            "REJECTED"
+          ],
+          "mappedType": "enum"
+        },
+        "order_quantity": {
+          "name": "order_quantity",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "order_total_amount": {
+          "name": "order_total_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "order_origin_amount": {
+          "name": "order_origin_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "order_discount_rate": {
+          "name": "order_discount_rate",
+          "type": "numeric(5,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 5,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "order_discount_amount": {
+          "name": "order_discount_amount",
+          "type": "numeric(14,2)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "precision": 14,
+          "scale": 2,
+          "mappedType": "decimal"
+        },
+        "created_date": {
+          "name": "created_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": null,
+          "default": "CURRENT_TIMESTAMP",
+          "mappedType": "datetime"
+        },
+        "approved_date": {
+          "name": "approved_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "rejected_date": {
+          "name": "rejected_date",
+          "type": "datetime",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": null,
+          "mappedType": "datetime"
+        },
+        "order_product_id": {
+          "name": "order_product_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "order_payment_id": {
+          "name": "order_payment_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "order_delivery_id": {
+          "name": "order_delivery_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        },
+        "temp_order_id": {
+          "name": "temp_order_id",
+          "type": "char(26)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 26,
+          "mappedType": "character"
+        }
+      },
+      "name": "orders",
+      "indexes": [
+        {
+          "columnNames": [
+            "order_number"
+          ],
+          "composite": false,
+          "keyName": "orders_order_number_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "order_product_id"
+          ],
+          "composite": false,
+          "keyName": "orders_order_product_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "order_payment_id"
+          ],
+          "composite": false,
+          "keyName": "orders_order_payment_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "order_delivery_id"
+          ],
+          "composite": false,
+          "keyName": "orders_order_delivery_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "columnNames": [
+            "temp_order_id"
+          ],
+          "composite": false,
+          "keyName": "orders_temp_order_id_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
+          "keyName": "idx_orders_order_status",
+          "columnNames": [
+            "order_status"
+          ],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "idx_orders_user_id_order_status",
+          "columnNames": [
+            "user_id",
+            "order_status"
+          ],
+          "composite": true,
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "order_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "orders_order_product_id_foreign": {
+          "constraintName": "orders_order_product_id_foreign",
+          "columnNames": [
+            "order_product_id"
+          ],
+          "localTableName": "orders",
+          "referencedColumnNames": [
+            "order_product_id"
+          ],
+          "referencedTableName": "order_products",
+          "updateRule": "cascade"
+        },
+        "orders_order_payment_id_foreign": {
+          "constraintName": "orders_order_payment_id_foreign",
+          "columnNames": [
+            "order_payment_id"
+          ],
+          "localTableName": "orders",
+          "referencedColumnNames": [
+            "order_payment_id"
+          ],
+          "referencedTableName": "order_payments",
+          "updateRule": "cascade"
+        },
+        "orders_order_delivery_id_foreign": {
+          "constraintName": "orders_order_delivery_id_foreign",
+          "columnNames": [
+            "order_delivery_id"
+          ],
+          "localTableName": "orders",
+          "referencedColumnNames": [
+            "order_delivery_id"
+          ],
+          "referencedTableName": "order_deliveries",
+          "updateRule": "cascade"
+        },
+        "orders_temp_order_id_foreign": {
+          "constraintName": "orders_temp_order_id_foreign",
+          "columnNames": [
+            "temp_order_id"
+          ],
+          "localTableName": "orders",
+          "referencedColumnNames": [
+            "order_id"
+          ],
+          "referencedTableName": "orders",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "payment_method_id": {
+          "name": "payment_method_id",
+          "type": "int",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
+          "nullable": false,
+          "length": null,
+          "mappedType": "integer"
+        },
+        "payment_method_name": {
+          "name": "payment_method_name",
+          "type": "varchar(100)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 100,
+          "mappedType": "string"
+        },
+        "payment_method_type": {
+          "name": "payment_method_type",
+          "type": "varchar(45)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 45,
+          "mappedType": "string"
+        }
+      },
+      "name": "payment_methods",
+      "indexes": [
+        {
+          "keyName": "PRIMARY",
+          "columnNames": [
+            "payment_method_id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    }
+  ],
+  "nativeEnums": {}
+}

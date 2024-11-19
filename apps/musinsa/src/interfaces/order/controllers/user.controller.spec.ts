@@ -1,24 +1,25 @@
-import { ResponseEntity } from '@libs/domain/response';
-import { PaginationResponse } from '@libs/domain/pagination/dto/responses';
+import { CursorBasedPagination } from '@libs/domain/pagination/models';
+import { ResponseEntity } from '@libs/domain/response/models';
+import { CursorPaginationResponse } from '@libs/domain/pagination/dto/responses';
 import { mock, MockProxy } from 'jest-mock-extended';
 import { UserController } from './user.controller';
-import { PageMyOrdersUseCase } from '../../../application/order/usecases';
+import { PaginateMyOrdersUseCase } from '../../../application/order/usecases';
+
+const pageInfo = CursorBasedPagination.from({
+  items: [],
+  limit: 10,
+  totalCount: 0,
+});
 
 describe('UserController', () => {
   let userController: UserController;
-  let pageMyOrdersUseCase: MockProxy<PageMyOrdersUseCase>;
+  let paginateMyOrdersUseCase: MockProxy<PaginateMyOrdersUseCase>;
 
   beforeEach(() => {
-    pageMyOrdersUseCase = mock<PageMyOrdersUseCase>();
-    userController = new UserController(pageMyOrdersUseCase);
+    paginateMyOrdersUseCase = mock<PaginateMyOrdersUseCase>();
+    userController = new UserController(paginateMyOrdersUseCase);
 
-    pageMyOrdersUseCase.execute.mockResolvedValue({
-      items: [],
-      hasNextPage: false,
-      hasPrevPage: false,
-      size: 0,
-      totalCount: 0,
-    });
+    paginateMyOrdersUseCase.execute.mockResolvedValue(pageInfo);
   });
 
   it('나의 주문내역을 조회합니다.', async () => {
@@ -30,12 +31,14 @@ describe('UserController', () => {
 
     expect(result).toEqual(
       ResponseEntity.okWith(
-        PaginationResponse.from({
+        CursorPaginationResponse.from({
           items: [],
           hasNextPage: false,
           hasPrevPage: false,
           size: 0,
           totalCount: 0,
+          startCursor: null,
+          endCursor: null,
         }),
       ),
     );

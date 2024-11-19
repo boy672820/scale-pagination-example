@@ -1,1 +1,2 @@
-export * from './PaginationResponse';
+export * from './CursorPaginationResponse';
+export * from './OffsetPaginationResponse';

@@ -16,7 +16,8 @@
       "entryFile": "main",
       "sourceRoot": "apps/musinsa/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/musinsa/tsconfig.app.json"
+        "tsConfigPath": "apps/musinsa/tsconfig.app.json",
+        "webpackConfigPath": "apps/musinsa/webpack.config.js"
       }
     },
     "batch": {

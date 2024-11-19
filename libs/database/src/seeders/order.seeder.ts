@@ -14,9 +14,9 @@ export class OrderSeeder extends Seeder {
         const orderDelivery = new OrderDeliveryFactory(em).makeOne();
         const orderPayment = new OrderPaymentFactory(em).makeOne();
 
-        order.orderProductId = orderProduct.id;
-        order.orderDeliveryId = orderDelivery.id;
-        order.orderPaymentId = orderPayment.id;
+        order.orderProduct = orderProduct;
+        order.orderDelivery = orderDelivery;
+        order.orderPayment = orderPayment;
 
         // 결제내역을 구하기 위해, 구매내역 총 금액에 결제할인을 적용합니다.
         const { originAmount, totalAmount, discountAmount } = calculateAmount(

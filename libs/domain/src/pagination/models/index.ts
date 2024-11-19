@@ -1,1 +1,2 @@
-export * from './PageInfo';
+export * from './CursorBasedPagination';
+export * from './OffsetBasedPagination';

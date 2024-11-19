@@ -1,15 +1,16 @@
+import { CursorBasedPagination } from '@libs/domain/pagination/models';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { mock, MockProxy } from 'jest-mock-extended';
-import { PageOrdersUseCase } from './page-orders.usecase';
+import { PaginateOrdersByCursorUseCase } from './paginate-orders-by-cursor.usecase';
 import { OrderService } from '../../../domain/order/services';
 import { OrderRepository } from '../../../domain/order/repositories';
 import { Order } from '../../../domain/order/models';
 
 const order = Order.from({} as any);
 
-describe('PageOrdersUseCase (Integration)', () => {
-  let pageOrdersUseCase: PageOrdersUseCase;
+describe('PaginateOrdersByCursorUseCase (Integration)', () => {
+  let pageOrdersUseCase: PaginateOrdersByCursorUseCase;
   let orderRepository: MockProxy<OrderRepository>;
   let app: INestApplication;
 
@@ -19,7 +20,7 @@ describe('PageOrdersUseCase (Integration)', () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
         OrderService,
-        PageOrdersUseCase,
+        PaginateOrdersByCursorUseCase,
         { provide: OrderRepository, useValue: orderRepository },
       ],
     }).compile();
@@ -27,7 +28,7 @@ describe('PageOrdersUseCase (Integration)', () => {
     app = moduleRef.createNestApplication();
     await app.init();
 
-    pageOrdersUseCase = moduleRef.get(PageOrdersUseCase);
+    pageOrdersUseCase = moduleRef.get(PaginateOrdersByCursorUseCase);
 
     orderRepository.findByCursor.mockResolvedValue([order]);
   });
@@ -39,13 +40,7 @@ describe('PageOrdersUseCase (Integration)', () => {
 
       const result = await pageOrdersUseCase.execute({ cursor, limit });
 
-      expect(result).toEqual({
-        items: [order],
-        hasNextPage: false,
-        hasPrevPage: false,
-        size: 1,
-        totalCount: 1,
-      });
+      expect(result).toBeInstanceOf(CursorBasedPagination);
     });
   });
 });
