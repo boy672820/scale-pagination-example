@@ -6,6 +6,7 @@ import { PaginateOrdersByPageUseCase } from './paginate-orders-by-page.usecase';
 import { OrderService } from '../../../domain/order/services';
 import { OrderRepository } from '../../../domain/order/repositories';
 import { Order } from '../../../domain/order/models';
+import { OrderBy, Sort } from '../../../domain/order/types';
 
 const order = Order.from({} as any);
 
@@ -38,7 +39,12 @@ describe('PaginateOrdersByPageUseCase (Integration)', () => {
       const pageNumber = 1;
       const limit = 10;
 
-      const result = await pageOrdersUseCase.execute({ pageNumber, limit });
+      const result = await pageOrdersUseCase.execute({
+        pageNumber,
+        limit,
+        sort: Sort.CreatedDate,
+        orderBy: OrderBy.Asc,
+      });
 
       expect(result).toBeInstanceOf(OffsetBasedPagination);
     });

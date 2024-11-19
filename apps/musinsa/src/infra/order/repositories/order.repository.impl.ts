@@ -12,21 +12,6 @@ import { OrderBy, Sort } from '../../../domain/order/types';
 export class OrderRepositoryImpl implements OrderRepository {
   constructor(private readonly em: EntityManager) {}
 
-  async findByCursor({
-    cursor,
-    limit,
-  }: {
-    cursor?: string;
-    limit: number;
-  }): Promise<Order[]> {
-    const entities = await this.em.findAll(OrderEntity, {
-      ...(cursor ? { where: { id: { $gt: cursor } } } : {}),
-      orderBy: { id: 'ASC' },
-      limit,
-    });
-    return OrderMapper.toModel(entities);
-  }
-
   async findByOffset({
     offset,
     limit,
@@ -53,6 +38,39 @@ export class OrderRepositoryImpl implements OrderRepository {
       })
       .getResultList();
 
+    return OrderMapper.toModel(entities);
+  }
+
+  async findByCursor({
+    cursor,
+    limit,
+    sort: _,
+    orderBy,
+  }: {
+    cursor?: string;
+    limit: number;
+    sort: Sort;
+    orderBy: OrderBy;
+  }): Promise<Order[]> {
+    // const temp = this.em
+    //   .createQueryBuilder(OrderEntity)
+    //   .select([
+    //     'id',
+    //     sql`concat(lpad(order_total_amount, 10, '0'), order_id) as cursor`,
+    //   ])
+    //   .orderBy({ [sort]: orderBy });
+
+    // const entities = await this.em
+    //   .createQueryBuilder(OrderEntity, 'o')
+    //   .select('*')
+    //   .join(temp, 'temp', { 'temp.order_id': sql`o.order_id` })
+    //   .where({ [sql`temp.cursor`]: { $gt: cursor.padStart(10, '0') +  } });
+
+    const entities = await this.em.findAll(OrderEntity, {
+      ...(cursor ? { where: { id: { $gt: cursor } } } : {}),
+      orderBy: { id: orderBy },
+      limit,
+    });
     return OrderMapper.toModel(entities);
   }
 

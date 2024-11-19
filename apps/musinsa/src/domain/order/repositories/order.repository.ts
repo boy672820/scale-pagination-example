@@ -5,6 +5,8 @@ export abstract class OrderRepository {
   abstract findByCursor(cursorBasedPagination: {
     cursor?: string;
     limit: number;
+    sort: Sort;
+    orderBy: OrderBy;
   }): Promise<Order[]>;
   abstract findByOffset(offsetBasedPagination: {
     offset: number;

@@ -14,6 +14,7 @@ import {
   PaginateOrdersByPageUseCase,
 } from '../../../application/order/usecases';
 import { OrderResponse } from '../dto/responses';
+import { OrderBy, Sort } from '../../../domain/order/types';
 
 const pageInfoByCursor = CursorBasedPagination.from({
   items: [],
@@ -47,8 +48,19 @@ describe('OrderController', () => {
     it('커서를 이용하여 주문내역을 조회합니다.', async () => {
       const cursor = '1';
       const limit = 10;
+      const sort = Sort.CreatedDate;
+      const orderBy = OrderBy.Asc;
 
-      const result = await orderController.findAll({ cursor, limit });
+      const result = await orderController.findAll(
+        {
+          cursor,
+          limit,
+        },
+        {
+          sort,
+          orderBy,
+        },
+      );
 
       expect(result).toEqual(
         ResponseEntity.okWith(
@@ -62,11 +74,19 @@ describe('OrderController', () => {
     it('페이지 번호를 이용하여 주문내역을 조회합니다.', async () => {
       const pageNumber = 1;
       const limit = 10;
+      const sort = Sort.CreatedDate;
+      const orderBy = OrderBy.Asc;
 
-      const result = await orderController.findAll({
-        pageNumber,
-        limit,
-      });
+      const result = await orderController.findAll(
+        {
+          pageNumber,
+          limit,
+        },
+        {
+          sort,
+          orderBy,
+        },
+      );
 
       expect(result).toEqual(
         ResponseEntity.okWith(
