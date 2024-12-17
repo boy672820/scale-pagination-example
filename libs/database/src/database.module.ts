@@ -26,6 +26,10 @@ export class DatabaseModule {
             password: configService.get<string>('database.password'),
             dbName: configService.get<string>('database.dbName'),
             debug: options?.debug,
+            replicas: [
+              { name: 'read-1', port: 3307 },
+              { name: 'read-2', port: 3308 },
+            ],
           }),
           imports: [ConfigModule.forFeature(databaseConfig)],
         }),

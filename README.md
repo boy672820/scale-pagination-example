@@ -1,73 +1,74 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+## MySQL Replication 구성하기
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Docker Compose로 생성된 데이터베이스 컨테이너들은 아직 Replication 구성이 완료되지 않았습니다. 때문에 아래 절차대로 진행하여 Replication을 구성할 수 있습니다.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+먼저, Master 설정이 필요합니다.<br />
+mysql-master 컨테이너에 접속하여 아래 쿼리를 실행해주세요.
+해당 쿼리는 Slave 데이터베이스에서 접속할 계정의 비밀번호와 replication 권한을 부여하는 쿼리입니다.
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ yarn install
+```sql
+> ALTER USER 'replication_user'@'%' IDENTIFIED WITH 'mysql_native_password' BY '123';
+> GRANT REPLICATION SLAVE ON *.* TO 'replication_user'@'%';
+> FLUSH PRIVILEGES;
 ```
 
-## Running the app
+다음은 Slave 데이터베이스에서 참조할 바이너리 파일과 포지션 값을 알야아 합니다.
 
-```bash
-# development
-$ yarn run start
+`SHOW MASTER STATUS;` 쿼리를 실행하여 '바이너리 파일'과 '포지션 값'을 알아야 합니다.
 
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```
+mysql> SHOW MASTER STATUS;
++------------------+----------+--------------+------------------+-------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++------------------+----------+--------------+------------------+-------------------+
+| mysql-bin.000003 |      618 |              |                  |                   |
++------------------+----------+--------------+------------------+-------------------+
+1 row in set (0.00 sec)
 ```
 
-## Test
+'바이너리 파일'과 '포지션'을 알았으니 Slave 데이터베이스에 접속합니다.
 
-```bash
-# unit tests
-$ yarn run test
+방금 조회한 '바이너리 파일'과 '포지션 값' 정보를 아래 쿼리에 삽입 후 실행해주세요.
 
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```sql
+> CHANGE MASTER TO
+    MASTER_HOST='mysql-master',
+    MASTER_USER='replication_user',
+    MASTER_PASSWORD='123',
+    MASTER_LOG_FILE='mysql-bin.000003',
+    MASTER_LOG_FILE='mysql-bin.{바이너리 로그 파일}',
+    MASTER_LOG_POS={포지션 값};
 ```
 
-## Support
+Master 데이터베이스 설정이 완료되면 아래 쿼리를 실행합니다.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+> START SLAVE;
+```
 
-## Stay in touch
+`SHOW SLAVE STATUS\G` 쿼리로 설정이 완료되었는지 확인해 봅니다.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+mysql> SHOW SLAVE STATUS\G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for source to send event
+                  Master_Host: mysql-master
+                  Master_User: replication_user
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: mysql-bin.000003
+          Read_Master_Log_Pos: 618
+               Relay_Log_File: 4dd3e6bbe377-relay-bin.000002
+                Relay_Log_Pos: 326
+        Relay_Master_Log_File: mysql-bin.000003
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+            ...
+```
 
-## License
+결과에서 `Slave_IO_Running`와 `Slave_SQL_Running` 값이 Yes이면 Mater-Slave 구성이 정상적으로 완료된 겁니다.
 
-Nest is [MIT licensed](LICENSE).
+>[!TIP]
+>
+>만약, `Slave_IO_Running: connecting` 상태로 되어있다면 Master의 replication_user의 비밀번호 설정이 잘못되었거나, docker network 구성을 의심해보아야 합니다.
+>특히, replication_user 비밀번호 설정할 때 `mysql_native_password` 플러그인을 사용하지 않는다면, 기본 플러그인인 `caching_sha2_password`로 설정되어 있을 확률이 높습니다. `caching_sha2_password`는 MySQL 8버전의 기본 비밀번호 암호화 설정으로, 이 설정이 되어있는 계정은 SSL/TLS 또는 RSA 키 페어 사용이 필요합니다. 운영 환경에서는 필수로 설정하는게 올바르지만, 개발 환경에서는 `mysql_native_password` 플러그인으로 replication_user 계정의 비밀번호를 설정해주세요.

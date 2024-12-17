@@ -575,6 +575,28 @@
           "length": null,
           "mappedType": "datetime"
         },
+        "approved_date_not_null": {
+          "name": "approved_date_not_null",
+          "type": "varchar(255)",
+          "generated": "(IF(approved_date IS NOT NULL, approved_date, NULL)) STORED",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "rejected_date_not_null": {
+          "name": "rejected_date_not_null",
+          "type": "varchar(255)",
+          "generated": "(IF(rejected_date IS NOT NULL, rejected_date, NULL)) STORED",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
         "order_product_id": {
           "name": "order_product_id",
           "type": "char(26)",
@@ -597,16 +619,6 @@
         },
         "order_delivery_id": {
           "name": "order_delivery_id",
-          "type": "char(26)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 26,
-          "mappedType": "character"
-        },
-        "temp_order_id": {
-          "name": "temp_order_id",
           "type": "char(26)",
           "unsigned": false,
           "autoincrement": false,
@@ -659,14 +671,37 @@
           "unique": true
         },
         {
+          "keyName": "idx_orders_total_amount_order_id",
           "columnNames": [
-            "temp_order_id"
+            "order_total_amount",
+            "order_id"
           ],
-          "composite": false,
-          "keyName": "orders_temp_order_id_unique",
-          "constraint": true,
+          "composite": true,
+          "constraint": false,
           "primary": false,
-          "unique": true
+          "unique": false
+        },
+        {
+          "keyName": "idx_orders_rejected_date_order_id",
+          "columnNames": [
+            "rejected_date_not_null",
+            "order_id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "idx_orders_approved_date_order_id",
+          "columnNames": [
+            "approved_date_not_null",
+            "order_id"
+          ],
+          "composite": true,
+          "constraint": false,
+          "primary": false,
+          "unique": false
         },
         {
           "keyName": "idx_orders_order_status",
@@ -736,18 +771,6 @@
             "order_delivery_id"
           ],
           "referencedTableName": "order_deliveries",
-          "updateRule": "cascade"
-        },
-        "orders_temp_order_id_foreign": {
-          "constraintName": "orders_temp_order_id_foreign",
-          "columnNames": [
-            "temp_order_id"
-          ],
-          "localTableName": "orders",
-          "referencedColumnNames": [
-            "order_id"
-          ],
-          "referencedTableName": "orders",
           "updateRule": "cascade"
         }
       },

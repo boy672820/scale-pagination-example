@@ -4,7 +4,7 @@ import { OrderBy, Sort } from '../../../../domain/order/types';
 export class SortQuery {
   @IsEnum(Sort)
   @IsOptional()
-  readonly sort: Sort = Sort.CreatedDate;
+  readonly sort: Sort;
 
   @IsEnum(OrderBy)
   @IsOptional()

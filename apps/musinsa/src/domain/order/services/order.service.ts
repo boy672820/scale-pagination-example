@@ -44,25 +44,67 @@ export class OrderService {
       items: orders,
       totalCount,
       currentPageNumber: pageNumber,
+      endCursor: null,
+      startCursor: null,
     });
   }
 
   async findByCursor({
     cursor,
     limit,
+    sort,
+    orderBy,
   }: {
     limit: number;
     cursor?: string;
     sort: Sort;
     orderBy: OrderBy;
   }): Promise<CursorBasedPagination<Order>> {
-    const orders = await this.orderRepository.findByCursor({ cursor, limit });
+    const orders = await this.orderRepository.findByCursor({
+      cursor,
+      limit: limit + 1,
+      sort,
+      orderBy,
+    });
+
+    const hasNextPage = limit < orders.length;
+    const hasPrevPage = typeof cursor !== 'undefined';
+
+    if (hasNextPage) {
+      orders.pop();
+    }
+
+    const first = orders[0];
+    const last = orders.at(-1);
+
+    let startCursor;
+    let endCursor;
+
+    switch (sort) {
+      case Sort.TotalAmount:
+        startCursor = first?.totalAmount.padStart(14, '0') + first?.id || null;
+        endCursor = last?.totalAmount.padStart(14, '0') + last?.id || null;
+        break;
+      case Sort.ApprovedDate:
+        startCursor = first?.approvedDate?.toTimesetamp() + first?.id || null;
+        endCursor = last?.approvedDate?.toTimesetamp() + last?.id || null;
+        break;
+      case Sort.RejectedDate:
+        startCursor = first?.rejectedDate?.toTimesetamp() + first?.id || null;
+        endCursor = last?.rejectedDate?.toTimesetamp() + last?.id || null;
+        break;
+      default:
+        startCursor = first?.id || null;
+        endCursor = last?.id || null;
+    }
 
     return CursorBasedPagination.from({
-      items: orders.map((order) => Object.assign(order, { cursor: order.id })),
+      items: orders,
       totalCount: 0,
-      cursor,
-      limit,
+      startCursor,
+      endCursor,
+      hasNextPage,
+      hasPrevPage,
     });
   }
 
@@ -79,8 +121,10 @@ export class OrderService {
     return CursorBasedPagination.from({
       items: orders.map((order) => Object.assign(order, { cursor: order.id })),
       totalCount,
-      cursor,
-      limit,
+      startCursor: null,
+      endCursor: null,
+      hasNextPage: false,
+      hasPrevPage: false,
     });
   }
 }

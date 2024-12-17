@@ -1,0 +1,58 @@
+# This line tells Docker Compose the version we're using
+version: '3'
+
+services:
+  mysql-master:
+    image: mysql:8.0.40
+    container_name: mysql-master
+    command:
+      - --server-id=1
+      - --log-bin=mysql-bin
+      - --binlog-format=row
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+      MYSQL_USER: replication_user
+      MYSQL_PASSWORD: 123
+    ports:
+      - '${DATABASE_PORT}:3306'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+
+  mysql-slave-1:
+    image: mysql:8.0.40
+    container_name: mysql-slave-1
+    depends_on:
+      - mysql-master
+    command:
+      - --server-id=2
+      - --log-bin=mysql-bin
+      - --binlog-format=row
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+    ports:
+      - '3307:3306'
+  mysql-slave-2:
+    image: mysql:8.0.40
+    container_name: mysql-slave-2
+    depends_on:
+      - mysql-master
+    command:
+      - --server-id=3
+      - --log-bin=mysql-bin
+      - --binlog-format=row
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+    ports:
+      - '3308:3306'

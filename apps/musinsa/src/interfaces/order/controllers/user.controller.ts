@@ -2,8 +2,8 @@ import { ResponseEntity } from '@libs/domain/response/models';
 import { ApiResponse } from '@libs/domain/response/decorators';
 import { CursorPaginationResponse } from '@libs/domain/pagination/dto/responses';
 import { Auth, User, UserPayload } from '@libs/auth/decorators';
-import { Controller, Get, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CursorBasedPaginationQuery } from '../dto/queries';
 import { PaginateMyOrdersUseCase } from '../../../application/order/usecases';
 import { OrderProductSummaryResponse } from '../dto/responses';
@@ -14,7 +14,6 @@ export class UserController {
   constructor(private readonly pageMyOrdersUseCase: PaginateMyOrdersUseCase) {}
 
   @ApiOperation({ summary: '내 주문내역 조회' })
-  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: CursorPaginationResponse })
   @Auth()
   @Get('me/orders')
@@ -32,5 +31,12 @@ export class UserController {
         OrderProductSummaryResponse.from,
       ),
     );
+  }
+
+  @ApiOperation({ summary: '내 주문 상세내역 조회' })
+  @Auth()
+  @Get('/me/orders/:id')
+  async findMyOrderDetail(@Param('id') id: string) {
+    return id;
   }
 }

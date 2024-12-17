@@ -1,4 +1,5 @@
 import { OrderStatus } from '@libs/domain/order/types';
+import { DateTime } from '@libs/domain/types';
 import { Order as OrderProps } from '@libs/domain/order/models';
 
 export class Order implements OrderProps {
@@ -15,9 +16,9 @@ export class Order implements OrderProps {
   originAmount: string;
   discountRate?: string;
   discountAmount?: string;
-  createdDate: Date;
-  approvedDate?: Date;
-  rejectedDate?: Date;
+  createdDate: DateTime;
+  approvedDate?: DateTime;
+  rejectedDate?: DateTime;
 
   private constructor(props: OrderProps) {
     Object.assign(this, props);

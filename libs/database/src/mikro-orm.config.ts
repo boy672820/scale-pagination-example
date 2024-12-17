@@ -43,6 +43,11 @@ const config: Options = {
   migrations: {
     tableName: 'mikro_orm_migrations',
     pathTs: 'libs/database/src/migrations',
+    disableForeignKeys: false,
+  },
+  schemaGenerator: {
+    disableForeignKeys: false,
+    createForeignKeyConstraints: false,
   },
 };
 

@@ -18,7 +18,6 @@ import {
 import {
   CursorBasedPaginationQuery,
   OffsetBasedPaginationQuery,
-  PaginationQuery,
   SortQuery,
 } from '../dto/queries';
 import { OrderResponse } from '../dto/responses';
@@ -51,26 +50,30 @@ export class OrderController {
   @Get()
   async findAll(
     @Query(PaginationQueryPipe)
-    paginationQuery: PaginationQuery,
+    paginationQuery: OffsetBasedPaginationQuery | CursorBasedPaginationQuery,
     @Query()
     sortQuery: SortQuery,
   ) {
-    if ('cursor' in paginationQuery) {
-      const pageInfo = await this.paginateOrdersByCursorUseCase.execute({
+    if ('pageNumber' in paginationQuery) {
+      const pageInfo = await this.paginateOrdersByPageUseCase.execute({
         ...paginationQuery,
         ...sortQuery,
       });
       return ResponseEntity.okWith(
-        CursorPaginationResponse.from(pageInfo).reduceItems(OrderResponse.from),
+        OffsetPaginationResponse.from(pageInfo).reduceItems(
+          OrderResponse.fromDomain,
+        ),
       );
     }
 
-    const pageInfo = await this.paginateOrdersByPageUseCase.execute({
+    const pageInfo = await this.paginateOrdersByCursorUseCase.execute({
       ...paginationQuery,
       ...sortQuery,
     });
     return ResponseEntity.okWith(
-      OffsetPaginationResponse.from(pageInfo).reduceItems(OrderResponse.from),
+      CursorPaginationResponse.from(pageInfo).reduceItems(
+        OrderResponse.fromDomain,
+      ),
     );
   }
 }

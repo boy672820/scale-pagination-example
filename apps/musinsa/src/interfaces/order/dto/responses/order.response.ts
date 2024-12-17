@@ -1,4 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
+import { Order } from '../../../../domain/order/models';
 
 interface Props {
   id: string;
@@ -10,9 +11,9 @@ interface Props {
   originAmount: string;
   discountRate?: string;
   discountAmount?: string;
-  createdDate: Date;
-  approvedDate?: Date;
-  rejectedDate?: Date;
+  createdDate: string;
+  approvedDate: string | null;
+  rejectedDate: string | null;
 }
 
 export class OrderResponse implements Props {
@@ -35,11 +36,11 @@ export class OrderResponse implements Props {
   @Exclude()
   private _discountAmount?: string;
   @Exclude()
-  private _createdDate: Date;
+  private _createdDate: string;
   @Exclude()
-  private _approvedDate?: Date;
+  private _approvedDate: string | null;
   @Exclude()
-  private _rejectedDate?: Date;
+  private _rejectedDate: string | null;
 
   @Expose()
   get id() {
@@ -78,15 +79,15 @@ export class OrderResponse implements Props {
     return this._discountAmount;
   }
   @Expose()
-  get createdDate() {
+  get createdDate(): string {
     return this._createdDate;
   }
   @Expose()
-  get approvedDate() {
+  get approvedDate(): string {
     return this._approvedDate;
   }
   @Expose()
-  get rejectedDate() {
+  get rejectedDate(): string {
     return this._rejectedDate;
   }
 
@@ -105,5 +106,19 @@ export class OrderResponse implements Props {
     this._rejectedDate = props.rejectedDate;
   }
 
-  static from = (props: Props) => new OrderResponse(props);
+  static fromDomain = (model: Order) =>
+    new OrderResponse({
+      id: model.id,
+      productId: model.productId,
+      orderNumber: model.orderNumber,
+      status: model.status,
+      quantity: model.quantity,
+      totalAmount: model.totalAmount,
+      originAmount: model.originAmount,
+      discountRate: model.discountRate,
+      discountAmount: model.discountAmount,
+      createdDate: model.createdDate.toISOString(),
+      approvedDate: model.approvedDate?.toISOString() || null,
+      rejectedDate: model.rejectedDate?.toISOString() || null,
+    });
 }

@@ -1,3 +1,4 @@
+import { DateTime } from '../../types';
 import { OrderStatus } from '../types';
 
 export interface Order {
@@ -14,7 +15,7 @@ export interface Order {
   originAmount: string;
   discountRate?: string;
   discountAmount?: string;
-  createdDate: Date;
-  approvedDate?: Date;
-  rejectedDate?: Date;
+  createdDate: DateTime;
+  approvedDate?: DateTime;
+  rejectedDate?: DateTime;
 }

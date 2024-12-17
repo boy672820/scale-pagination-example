@@ -18,10 +18,13 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/musinsa/test/jest-e2e.json",
+    "db:init": "npx mikro-orm migration:up && npx mikro-orm seeder:run",
+    "db:migration": "npx mikro-orm migration:up",
     "db:seed": "npx mikro-orm seeder:run"
   },
   "dependencies": {
     "@faker-js/faker": "^9.2.0",
+    "@js-joda/core": "^5.6.3",
     "@mikro-orm/core": "^6.3.13",
     "@mikro-orm/mysql": "^6.3.13",
     "@mikro-orm/nestjs": "^6.0.2",
@@ -36,6 +39,7 @@
     "bignumber.js": "^9.1.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "cron": "^3.2.1",
     "nanoid": "3",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",

@@ -3,6 +3,7 @@ import {
   Enum,
   Index,
   OneToOne,
+  Opt,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
@@ -19,16 +20,16 @@ import { OrderDeliveryEntity } from './order-delivery.entity';
   properties: ['status'],
 })
 @Index({
-  name: 'idx_orders_approved_date',
-  properties: ['approvedDate'],
+  name: 'idx_orders_approved_date_order_id',
+  properties: ['approvedDateNotNull', 'id'],
 })
 @Index({
-  name: 'idx_orders_rejected_date',
-  properties: ['rejectedDate'],
+  name: 'idx_orders_rejected_date_order_id',
+  properties: ['rejectedDateNotNull', 'id'],
 })
 @Index({
-  name: 'idx_orders_total_amount',
-  properties: ['totalAmount'],
+  name: 'idx_orders_total_amount_order_id',
+  properties: ['totalAmount', 'id'],
 })
 @Entity({ tableName: 'orders' })
 export class OrderEntity {
@@ -102,6 +103,20 @@ export class OrderEntity {
 
   @Property({ name: 'rejected_date', type: 'datetime', nullable: true })
   rejectedDate?: Date;
+
+  @Property<OrderEntity>({
+    name: 'approved_date_not_null',
+    generated: (cols) =>
+      `(IF(${cols.approvedDate} IS NOT NULL, ${cols.approvedDate}, NULL)) STORED`,
+  })
+  approvedDateNotNull: Date & Opt;
+
+  @Property<OrderEntity>({
+    name: 'rejected_date_not_null',
+    generated: (cols) =>
+      `(IF(${cols.rejectedDate} IS NOT NULL, ${cols.rejectedDate}, NULL)) STORED`,
+  })
+  rejectedDateNotNull: Date & Opt;
 
   @OneToOne({ joinColumn: 'order_product_id' })
   orderProduct: OrderProductEntity;

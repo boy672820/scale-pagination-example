@@ -20,15 +20,18 @@ export class OrderRepositoryImpl implements OrderRepository {
   }: {
     offset: number;
     limit: number;
-    sort: Sort;
+    sort?: Sort;
     orderBy: OrderBy;
   }): Promise<Order[]> {
     const temp = this.em
       .createQueryBuilder(OrderEntity)
       .select('id')
-      .orderBy({ [sort === Sort.CreatedDate ? 'id' : sort]: orderBy })
       .limit(limit)
       .offset(offset);
+
+    if (sort) {
+      temp.orderBy({ [sort]: orderBy });
+    }
 
     const entities = await this.em
       .createQueryBuilder(OrderEntity, 'o')
@@ -44,33 +47,60 @@ export class OrderRepositoryImpl implements OrderRepository {
   async findByCursor({
     cursor,
     limit,
-    sort: _,
+    sort,
     orderBy,
   }: {
     cursor?: string;
+    sort?: Sort;
     limit: number;
-    sort: Sort;
     orderBy: OrderBy;
   }): Promise<Order[]> {
-    // const temp = this.em
-    //   .createQueryBuilder(OrderEntity)
-    //   .select([
-    //     'id',
-    //     sql`concat(lpad(order_total_amount, 10, '0'), order_id) as cursor`,
-    //   ])
-    //   .orderBy({ [sort]: orderBy });
+    const subQuery = this.em.createQueryBuilder(OrderEntity);
+    const baseQuery = this.em.createQueryBuilder(OrderEntity, 'o').select('*');
 
-    // const entities = await this.em
-    //   .createQueryBuilder(OrderEntity, 'o')
-    //   .select('*')
-    //   .join(temp, 'temp', { 'temp.order_id': sql`o.order_id` })
-    //   .where({ [sql`temp.cursor`]: { $gt: cursor.padStart(10, '0') +  } });
+    switch (sort) {
+      case Sort.TotalAmount:
+        subQuery.select([
+          'id',
+          sql`concat(lpad(order_total_amount, 14, '0'), order_id) as custom_cursor`,
+        ]);
+        break;
+      case Sort.ApprovedDate:
+        subQuery
+          .select([
+            'id',
+            sql`concat(unix_timestamp(approved_date), order_id) as custom_cursor`,
+          ])
+          .where({ approvedDate: { $ne: null } });
+        break;
+      case Sort.RejectedDate:
+        subQuery
+          .select([
+            'id',
+            sql`concat(unix_timestamp(rejected_date), order_id) as custom_cursor`,
+          ])
+          .where({ rejectedDate: { $ne: null } });
+        break;
+      default:
+        subQuery.select(['id', sql`order_id as custom_cursor`]);
+    }
 
-    const entities = await this.em.findAll(OrderEntity, {
-      ...(cursor ? { where: { id: { $gt: cursor } } } : {}),
-      orderBy: { id: orderBy },
-      limit,
-    });
+    baseQuery
+      .join(subQuery, 'temp', { 'temp.order_id': sql`o.order_id` })
+      .limit(limit);
+
+    if (sort) {
+      baseQuery.orderBy({ [sort]: orderBy, id: orderBy });
+    } else {
+      baseQuery.orderBy({ id: orderBy });
+    }
+
+    if (cursor) {
+      baseQuery.where(sql`custom_cursor > ${cursor}`);
+    }
+
+    const entities = await baseQuery.getResultList();
+
     return OrderMapper.toModel(entities);
   }
 

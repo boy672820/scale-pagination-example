@@ -7,6 +7,8 @@ interface Props {
   totalCount: number;
   fixedTotalCount: number;
   currentPageNumber: number;
+  startCursor: string;
+  endCursor: string;
 }
 
 export class OffsetPaginationResponse implements Props {
@@ -20,6 +22,10 @@ export class OffsetPaginationResponse implements Props {
   private _fixedTotalCount: number;
   @Exclude()
   private _currentPageNumber: number;
+  @Exclude()
+  private _startCursor: string;
+  @Exclude()
+  private _endCursor: string;
 
   @ApiProperty({ type: 'array' })
   @Expose()
@@ -46,6 +52,16 @@ export class OffsetPaginationResponse implements Props {
   get currentPageNumber() {
     return this._currentPageNumber;
   }
+  @ApiProperty({ type: 'string', description: '시작 커서' })
+  @Expose()
+  get startCursor() {
+    return this._startCursor;
+  }
+  @ApiProperty({ type: 'string', description: '종료 커서' })
+  @Expose()
+  get endCursor() {
+    return this._endCursor;
+  }
 
   constructor(props: Props) {
     this._items = props.items;
@@ -53,6 +69,8 @@ export class OffsetPaginationResponse implements Props {
     this._totalCount = props.totalCount;
     this._fixedTotalCount = props.fixedTotalCount;
     this._currentPageNumber = props.currentPageNumber;
+    this._startCursor = props.startCursor;
+    this._endCursor = props.endCursor;
   }
 
   static from = (props: Props): OffsetPaginationResponse =>

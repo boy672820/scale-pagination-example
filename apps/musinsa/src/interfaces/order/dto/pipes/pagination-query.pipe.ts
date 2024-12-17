@@ -7,6 +7,7 @@ import { plainToInstance } from 'class-transformer';
 import {
   CursorBasedPaginationQuery,
   OffsetBasedPaginationQuery,
+  PaginationQuery,
 } from '../queries';
 import { validate } from 'class-validator';
 
@@ -24,9 +25,8 @@ export class PaginationQueryPipe implements PipeTransform {
     if ('pageNumber' in value) {
       dto = plainToInstance(OffsetBasedPaginationQuery, value);
     }
-
     if (!dto) {
-      throw new BadRequestException('페이징 쿼리 요청이 잘못되었습니다.');
+      dto = plainToInstance(PaginationQuery, value);
     }
 
     const validation = await validate(dto);
